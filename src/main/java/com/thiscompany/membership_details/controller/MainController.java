@@ -6,10 +6,13 @@ import com.thiscompany.membership_details.service.UserInfoOrchestrator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.concurrent.RejectedExecutionException;
 
 @Slf4j
 @RestController
@@ -20,8 +23,8 @@ public class MainController {
     private final UserInfoOrchestrator infoOrchestrator;
 
     @PostMapping(value = "/check-user-membership", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public MembershipInfoResponse checkIsUserMemberOfGroup(@RequestBody MembershipInfoRequest request) {
-        return infoOrchestrator.getMemberDetails(request);
+    public ResponseEntity<MembershipInfoResponse> checkIsUserMemberOfGroup(@RequestBody MembershipInfoRequest request) throws RejectedExecutionException {
+        return ResponseEntity.ok(infoOrchestrator.assembleMemberDetails(request));
     }
 
 }

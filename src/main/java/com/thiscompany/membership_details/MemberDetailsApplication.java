@@ -2,12 +2,13 @@ package com.thiscompany.membership_details;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
+@EnableScheduling
 @SpringBootApplication
-public class UserDetailsReceiverApplication {
+public class MemberDetailsApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(UserDetailsReceiverApplication.class, args);
+        SpringApplication.run(MemberDetailsApplication.class, args);
     }
-
 }

@@ -1,6 +1,6 @@
-package com.thiscompany.membership_details.config;
+package com.thiscompany.membership_details.filter;
 
-import com.thiscompany.membership_details.exception_handler.EmptyTokenHeaderException;
+import com.thiscompany.membership_details.exception.TokenNotDefinedException;
 import com.thiscompany.membership_details.utils.Utils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -30,13 +30,12 @@ public class ServiceTokenPreFilter extends OncePerRequestFilter {
         try {
             final String token = request.getHeader(Utils.Const.TOKEN_HEADER);
             if(token == null) {
-                throw new EmptyTokenHeaderException(new Object[]{Utils.Const.TOKEN_HEADER});
+                throw new TokenNotDefinedException(new Object[]{Utils.Const.TOKEN_HEADER});
             }
             RequestContextHolder.currentRequestAttributes().setAttribute(Utils.Const.TOKEN_HEADER, token, RequestAttributes.SCOPE_REQUEST);
             filterChain.doFilter(request, response);
-        } catch (EmptyTokenHeaderException e) {
+        } catch (TokenNotDefinedException e) {
             exceptionResolver.resolveException(request, response, null, e);
         }
-
     }
 }

@@ -1,12 +1,19 @@
 server:
   port: 8080
-  address: 0.0.0.0
+  error:
+    whitelabel:
+      enabled: false
 spring:
   application:
-    name: User details receiver
+    name: Membership details
+    version: 1.0.0
   main:
     banner-mode: off
-  web:
-  webflux:
-    problemdetails:
-      enabled: off
+application:
+  version: v1
+  caches:
+    user-details-cache: user-details
+    membership-result-cache: membership-details
+logging:
+  level:
+    web: debug
