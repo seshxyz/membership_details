@@ -29,7 +29,7 @@ keycloak:
   admin-username: ${KC_ADMIN_USERNAME:admin}
   admin-password: ${KC_ADMIN_PASSWORD:password}
   client-id: keycloak-auth-client
-  grant-type: client-credentials
+  grant-type: client_credentials
   admin-token-path: /realms/master/protocol/openid-connect/token
   clients-settings-path: /admin/realms/app_realm/clients
   realm-auth-uri: /realms/app_realm/protocol/openid-connect/auth

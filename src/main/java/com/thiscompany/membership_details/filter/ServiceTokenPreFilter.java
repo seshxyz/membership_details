@@ -14,6 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 public class ServiceTokenPreFilter extends OncePerRequestFilter {
@@ -27,7 +28,7 @@ public class ServiceTokenPreFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (!"/auth".equals(request.getRequestURI())) {
+        if (request.getRequestURI().startsWith("/api/v1/")) {
             try {
                 final String token = request.getHeader(Utils.Const.TOKEN_HEADER);
                 if (token == null) {
