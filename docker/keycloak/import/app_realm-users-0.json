@@ -1,0 +1,21 @@
+{
+  "realm" : "app_realm",
+  "users" : [ {
+    "id" : "bc4b6fa1-6b05-49f1-89f4-92d1d47510b9",
+    "username" : "service-account-keycloak-auth-client",
+    "emailVerified" : false,
+    "enabled" : true,
+    "createdTimestamp" : 1763220810987,
+    "totp" : false,
+    "serviceAccountClientId" : "keycloak-auth-client",
+    "credentials" : [ ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-app_realm" ],
+    "clientRoles" : {
+      "keycloak-auth-client" : [ "uma_protection" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  } ]
+}
