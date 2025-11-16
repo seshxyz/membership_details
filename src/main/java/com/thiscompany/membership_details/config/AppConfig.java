@@ -12,6 +12,8 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.web.client.RestClient;
 
 @Configuration
 @EnableCaching
@@ -19,7 +21,7 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfig {
 
     private final ApplicationContext applicationContext;
-
+    private final KeycloakProperties keycloakProperties;
 
     @Bean
     public ObjectMapper objectMapper() {
@@ -50,6 +52,14 @@ public class AppConfig {
             @Override
             public void afterApplicationStart(CamelContext camelContext) {}
         };
+    }
+
+    @Lazy
+    @Bean
+    public RestClient keycloakRestClient() {
+        return RestClient.builder()
+                   .baseUrl(keycloakProperties.getHostPath())
+                   .build();
     }
 
 }

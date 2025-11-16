@@ -13,6 +13,7 @@ import java.util.concurrent.RejectedExecutionException;
 import static com.thiscompany.membership_details.utils.ExternalApiConst.Path;
 import static com.thiscompany.membership_details.utils.ExternalApiConst.Url;
 
+
 @Component
 @RequiredArgsConstructor
 public class ApplicationRouter extends RouteBuilder {

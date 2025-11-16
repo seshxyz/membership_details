@@ -1,0 +1,94 @@
+version: "2.39.3"
+
+services:
+  application:
+    build:
+     context: ../
+     dockerfile: docker/Dockerfile
+     args:
+       APP_NAME: ${APP_NAME}
+       APP_VERSION: ${APP_VERSION}
+       APP_PORT: ${APP_PORT}
+    container_name: Application
+    restart: unless-stopped
+    entrypoint: sh -c "until nc -z keycloak 8100; do echo 'Waiting for Keycloak...'; sleep 2; done && exec java -jar /app/$APP_NAME-$APP_VERSION.jar"
+    env_file:
+      - .env
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+      keycloak:
+        required: true
+        condition: service_started
+    networks:
+      - backend
+
+  keycloak-db:
+    image: postgres:16
+    container_name: ${KC_PSQL_CONTAINER_NAME}
+    restart: on-failure
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./keycloak-db:/etc/postgresql/data
+      - ./keycloak-db/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USERNAME} -d ${POSTGRES_DB}" ]
+      interval: 3s
+      timeout: 6s
+    networks:
+      - backend
+
+  keycloak:
+    container_name: ${KC_CONTAINER_NAME}
+    image: quay.io/keycloak/keycloak:26.3.4
+    ports:
+      - "${KC_PORT}:${KC_PORT}"
+      - "${KC_MANAGEMENT_PORT}:${KC_MANAGEMENT_PORT}"
+    env_file:
+      - .env
+    entrypoint:
+      ["sh", "-c", "/opt/keycloak/bin/kc.sh import --dir /opt/keycloak/data/import/ && /opt/keycloak/bin/kc.sh start"]
+    environment:
+      KC_ADMIN_USERNAME: ${KC_ADMIN_USERNAME}
+      KC_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD}
+      KC_DB: ${KC_PSQL_DB}
+      KC_DB_USERNAME: ${KC_PSQL_USERNAME}
+      KC_DB_PASSWORD: ${KC_PSQL_PASSWORD}
+      KC_DB_URL: jdbc:postgresql://${KC_PSQL_CONTAINER_NAME}:5432/${KC_PSQL_DB}
+      KC_DB_SCHEMA: provider_schema
+      KC_HTTP_ENABLED: true
+      KC_HTTP_RELATIVE_PATH: /
+      KC_HTTP_PORT: ${KC_PORT}
+      KC_HTTP_MANAGEMENT_PORT: ${KC_MANAGEMENT_PORT}
+      KC_HTTP_MANAGEMENT_SCHEME: http
+      KC_HEALTH_ENABLED: true
+      KC_HOSTNAME: ${KC_HOST}
+      KC_HOSTNAME_STRICT: "false"
+      KC_CACHE: local
+      KC_FEATURES: scripts:v1
+    volumes:
+      - ../docker/keycloak/import:/opt/keycloak/data/import
+      - ../docker/keycloak/export:/opt/keycloak/data/export
+    healthcheck:
+      test: ["NONE","{ printf 'HEAD /health/ready HTTP/1.0\r\n\r\n' >&0; grep 'HTTP/1.0 200'; } 0<>/dev/tcp/localhost/${KC_PORT}"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+    networks:
+      - backend
+
+volumes:
+  keycloak: {}
+  keycloak-db: {}
+
+networks:
+  backend:
+    driver: bridge

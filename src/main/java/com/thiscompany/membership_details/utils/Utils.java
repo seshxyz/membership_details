@@ -1,6 +1,6 @@
 package com.thiscompany.membership_details.utils;
 
-import com.thiscompany.membership_details.exception.TokenNotDefinedException;
+import com.thiscompany.membership_details.exception.TokenNotSpecifiedException;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
@@ -23,7 +23,8 @@ public final class Utils {
         return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
              .map(attributes -> attributes.getAttribute(Utils.Const.TOKEN_HEADER, RequestAttributes.SCOPE_REQUEST))
              .map(Object::toString)
-             .orElseThrow(() -> new TokenNotDefinedException(new Object[]{Utils.Const.TOKEN_HEADER}));
+             .filter(token ->!token.isBlank())
+             .orElseThrow(TokenNotSpecifiedException::new);
     }
 
 }

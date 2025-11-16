@@ -17,7 +17,7 @@ public class GroupMembershipChecker {
     private final RouteClient routeClient;
 
     @Cacheable(cacheNames = "membership-details", key = "#userId + ':' + #groupId")
-    public boolean checkUserMembership(int userId, long groupId) {
+    public boolean checkUserMembership(int userId, int groupId) {
         Map<String, Object> headers = Map.of(
             "token", Utils.getTokenFromCurrentRequest(),
             "userId", userId,

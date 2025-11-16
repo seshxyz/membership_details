@@ -24,13 +24,15 @@ public class UserDetailsService {
              "token", Utils.getTokenFromCurrentRequest(),
              "userId", userId
         );
-        UserDetailsGeneric response = routeClient.requestBodyAndHeaders(
+        UserDetailsGeneric wrappedResponse = routeClient.requestBodyAndHeaders(
             CamelRouteDirects.GET_USER_DETAILS, null, headers, UserDetailsGeneric.class
         );
-        if(response.getResponse() == null || response.getResponse().isEmpty()){
+        if(wrappedResponse == null) {
+            throw new UserNotFoundException(String.valueOf(userId));
+        } else if(wrappedResponse.getResponse() == null || wrappedResponse.getResponse().isEmpty()){
             throw new UserNotFoundException(String.valueOf(userId));
         }
-        UserDetailsDTO result = response.getResponse().getFirst();
+        UserDetailsDTO result = wrappedResponse.getResponse().getFirst();
         return result;
     }
 
